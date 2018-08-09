@@ -6,7 +6,7 @@ levelDB官方网站介绍的特点
 
 **特点**：
 
-- key和value都是任意长度的字节数组；
+- key和value都是任意长度的`字节数组`；
 - entry（即一条K-V记录）`默认是按照key的字典顺序存储`的，当然开发者也可以重载这个排序函数；
 - 提供的基本操作接口：Put()、Delete()、Get()、Batch()；
 - 支持批量操作以原子操作进行；
@@ -17,20 +17,23 @@ levelDB官方网站介绍的特点
 
 **限制**：
 
-- 非关系型数据模型（NoSQL），不支持sql语句，也`不支持索引`；
+- 非关系型数据模型（NoSQL），`不支持sql语句`，也`不支持索引`；
 - 一次只允许一个进程访问一个特定的数据库；
 - 没有内置的C/S架构，但开发者可以使用LevelDB库自己封装一个server；
 
 源码所在的目录在`ethereum/ethdb`目录。代码比较简单， 分为下面三个文件
 
-- database.go                  levelDB的`封装代码`
-- memory_database.go		   供测试用的`基于内存的数据库`，不会持久化为文件，仅供测试
-- interface.go				   定义了数据库的接口
-- database_test.go			   测试案例
+|file| description|
+-|-
+database.go|levelDB的`封装代码`|
+memory_database.go|供测试用的`基于内存的数据库`，不会持久化为文件，仅供测试|
+interface.go|定义了数据库的接口|
+database_test.go|测试案例|
+|
 
 ## interface.go
 
-看下面的代码，基本上定义了KeyValue数据库的基本操作， Put， Get， Has， Delete等基本操作，levelDB是不支持SQL的，基`本可以理解为数据结构里面的Map`。
+看下面的代码，基本上定义了KeyValue数据库的基本操作， Put， Get， Has， Delete等基本操作，levelDB是不支持SQL的，`基本可以理解为数据结构里面的Map`。
 
 ``` go
 package ethdb
@@ -65,7 +68,7 @@ type Batch interface {
 
 ## memory_database.go
 
-这个基本上就是封装了一个内存的Map结构。然后使用了一把锁来对多线程进行资源的保护。
+这个`基本上就是封装了一个内存的Map结构`。然后使用了一把锁来对多线程进行资源的保护。
 
 ```go
 type MemDatabase struct {
