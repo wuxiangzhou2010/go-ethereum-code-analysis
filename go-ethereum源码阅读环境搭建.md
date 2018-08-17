@@ -86,7 +86,7 @@ go-ethereum项目的组织结构基本上是按照功能模块划分的目录，
 		/wnode		这是一个简单的Whisper节点。 它可以用作独立的引导节点。此外，可以用于不同的测试和诊断目的。
 	common			提供了一些公共的工具类
 	compression		Package rle implements the run-length encoding used for Ethereum data.
-	consensus		提供了以太坊的一些共识算法，比如ethhash, clique(proof-of-authority)
+	consensus		提供了以太坊的一些共识算法，比如ethash, clique(proof-of-authority)
 	console			console类
 	contracts	
 	core			以太坊的核心数据结构和算法(虚拟机，状态，区块链，布隆过滤器)

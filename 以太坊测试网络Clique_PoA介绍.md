@@ -123,9 +123,9 @@ Parity的解决方案虽然不完美，但仍然可行。我想提出一个更�
 我们定义下面的常量：
 
 - EPOCH_LENGTH：检查点并重置未决投票的块数。
-	- 建议30000，以便和主网络的ethhash epoch类似
+	- 建议30000，以便和主网络的ethash epoch类似
 - BLOCK_PERIOD：两个连续块的时间戳之间的最小差异。
-	- 建议15，以便和主网络的ethhash epoch类似
+	- 建议15，以便和主网络的ethash epoch类似
 - EXTRA_VANITY：固定数量的ExtraData前缀字节为签名者vanity保留。
 	- 建议的32个字节以便和当前的ExtraData的长度相同。
 - EXTRA_SEAL：为签名者印章保留的固定数量的额外数据后缀字节。
