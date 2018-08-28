@@ -1,4 +1,7 @@
-eth的源码又下面几个包
+
+# eth 源码分析
+
+eth的源码有下面几个包
 
 - downloader 		主要用于和网络同步，包含了传统同步方式和快速同步方式
 - fetcher			主要用于基于块通知的同步，接收到当我们接收到NewBlockHashesMsg消息得时候，我们只收到了很多Block的hash值。 需要通过hash值来同步区块。
