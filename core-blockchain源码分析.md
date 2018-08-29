@@ -1,9 +1,19 @@
+# blockchain
+
 从测试案例来看,blockchain的主要功能点有下面几点.
 
 1. import.
 2. GetLastBlock的功能.
 3. 如果有多条区块链,可以选取其中难度最大的一条作为规范的区块链.
 4. BadHashes 可以手工禁止接受一些区块的hash值.在blocks.go里面.
+
+    ``` go
+    // BadHashes represent a set of manually tracked bad hashes (usually hard forks)
+    var BadHashes = map[common.Hash]bool{
+        common.HexToHash("05bef30ef572270f654746da22639a7a0c97dd97a7050b9e252391996aaeb689"): true,
+        common.HexToHash("7d05d08cbc596a2e5e4f13b80a743e53e09221b5323c3a61946b20873e58583f"): true,
+    }
+    ```
 5. 如果新配置了BadHashes. 那么区块启动的时候会自动禁止并进入有效状态.
 6. 错误的nonce会被拒绝.
 7. 支持Fast importing.
@@ -41,6 +51,7 @@
 "r" + num + hash -> block receipts  高度 + hash值 -> 区块收据
 
 "l" + hash -> transaction/receipt lookup metadata
+```
 
 key | value|说明|插入|删除|
 ---- | --- |---------------|-----------|-----------|
@@ -53,7 +64,6 @@ key | value|说明|插入|删除|
 "b" + num + hash|block body| 区块数据| WriteBlockAndState or InsertReceiptChain|SetHead中被删除，同上
 "r" + num + hash|block receipts|区块收据|WriteBlockAndState or InsertReceiptChain|同上
 "l" + txHash | {hash,num,TxIndex|交易hash可以找到区块和交易|当区块加入规范的区块链|当区块从规范的区块链移除
-```
 
 数据结构
 
@@ -66,14 +76,14 @@ key | value|说明|插入|删除|
 // Processor which processes the included transaction. The validation of the state
 // is done in the second part of the Validator. Failing results in aborting of
 // the import.
-// 插入一个区块需要通过一系列指定的规则指定的两阶段的验证器. 
+// 插入一个区块需要通过一系列指定的规则指定的两阶段的验证器.
 // 使用Processor来对区块的交易进行处理. 状态的验证是第二阶段的验证器. 错误将导致插入终止.
 // The BlockChain also helps in returning blocks from **any** chain included
 // in the database as well as blocks that represents the canonical chain. It's
 // important to note that GetBlock can return any block and does not need to be
 // included in the canonical one where as GetBlockByNumber always represents the
 // canonical chain.
-// 需要注意的是GetBlock可能返回任意不在当前规范区块链中的区块, 
+// 需要注意的是GetBlock可能返回任意不在当前规范区块链中的区块,
 // 但是GetBlockByNumber 总是返回当前规范区块链中的区块.
 type BlockChain struct {
     config *params.ChainConfig // chain & network configuration
@@ -273,7 +283,7 @@ func (bc *BlockChain) Reset() error {
 // specified genesis state.
 func (bc *BlockChain) ResetWithGenesisBlock(genesis *types.Block) error {
     // Dump the entire block chain and purge the caches
-    // 把整个区块链转储并清楚缓存
+    // 把整个区块链转储并清除缓存
     if err := bc.SetHead(0); err != nil {
         return err
     }
@@ -428,7 +438,7 @@ func (bc *BlockChain) insertChain(chain types.Blocks) (int, []interface{}, []*ty
             break
         }
         // If the header is a banned one, straight out abort
-        // 如果区块头被禁止了. 
+        // 如果区块头被禁止了.
         if BadHashes[block.Hash()] {
             bc.reportBlock(block, nil, ErrBlacklistedHash)
             return i, events, coalescedLogs, ErrBlacklistedHash
@@ -446,7 +456,7 @@ func (bc *BlockChain) insertChain(chain types.Blocks) (int, []interface{}, []*ty
                 continue
             }
 
-            if err == consensus.ErrFutureBlock { 
+            if err == consensus.ErrFutureBlock {
                 // Allow up to MaxFuture second in the future blocks. If this limit
                 // is exceeded the chain is discarded and processed at a later time
                 // if given.
@@ -460,7 +470,7 @@ func (bc *BlockChain) insertChain(chain types.Blocks) (int, []interface{}, []*ty
                 continue
             }
 
-            if err == consensus.ErrUnknownAncestor && bc.futureBlocks.Contains(block.ParentHash()) { 如果区块没有找到祖先 而在future blocks 包含了这个区块的祖先,那么也存放在future
+            if err == consensus.ErrUnknownAncestor && bc.futureBlocks.Contains(block.ParentHash()) { //如果区块没有找到祖先 而在future blocks 包含了这个区块的祖先,那么也存放在future
                 bc.futureBlocks.Add(block.Hash(), block)
                 stats.queued++
                 continue
@@ -482,7 +492,7 @@ func (bc *BlockChain) insertChain(chain types.Blocks) (int, []interface{}, []*ty
             return i, events, coalescedLogs, err
         }
         // Process block using the parent state as reference point.
-        // 处理区块,生成交易,收据,日志等信息. 
+        // 处理区块,生成交易,收据,日志等信息.
         // 实际上调用了state_processor.go 里面的 Process方法.
         receipts, logs, usedGas, err := bc.processor.Process(block, state, bc.vmConfig)
         if err != nil {
@@ -577,7 +587,7 @@ func (bc *BlockChain) WriteBlockAndState(block *types.Block, receipts []*types.R
     // Second clause in the if statement reduces the vulnerability to selfish mining.
     // Please refer to http://www.cs.cornell.edu/~ie53/publications/btcProcFC.pdf
     // 如果新的区块的总难度高于我们当前的区块, 把这个区块设置为规范的区块.
-    // 第二个表达式 ((externTd.Cmp(localTd) == 0 && mrand.Float64() < 0.5)) 
+    // 第二个表达式 ((externTd.Cmp(localTd) == 0 && mrand.Float64() < 0.5))
     // 是为了减少自私挖矿的可能性.
     if externTd.Cmp(localTd) > 0 || (externTd.Cmp(localTd) == 0 && mrand.Float64() < 0.5) {
         // Reorganise the chain if the parent is not the head block
@@ -719,7 +729,7 @@ func (bc *BlockChain) reorg(oldBlock, newBlock *types.Block) error {
     diff := types.TxDifference(deletedTxs, addedTxs)
     // When transactions get deleted from the database that means the
     // receipts that were created in the fork must also be deleted
-    // 删除那些需要删除的交易查询信息。 
+    // 删除那些需要删除的交易查询信息。
     // 这里并没有删除那些需要删除的区块，区块头，收据等信息。
     for _, tx := range diff {
         DeleteTxLookupEntry(bc.chainDb, tx.Hash())
