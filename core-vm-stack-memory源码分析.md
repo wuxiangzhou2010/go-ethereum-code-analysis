@@ -91,7 +91,7 @@ func (st *Stack) require(n int) error {
 
 ## intpool
 
-非常简单. 就是256大小的 big.int的池,用来加速bit.Int的分配
+非常简单. 就是256大小的 big.int的池,用来加速big.Int的分配
 
 ``` go
 var checkVal = big.NewInt(-42)
