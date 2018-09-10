@@ -255,7 +255,7 @@ func (evm *EVM) Cancel() {
 
 ```
 
-合约创建 Create 会创建一个新的合约。
+合约创建, Create 会创建一个新的合约。
 
 ``` go
 // Create creates a new contract using code as deployment code.
@@ -288,7 +288,7 @@ func (evm *EVM) Create(caller ContractRef, code []byte, gas uint64, value *big.I
     evm.Transfer(evm.StateDB, caller.Address(), contractAddr, value)  //转账
 
     // initialise a new contract and set the code that is to be used by the
-    // E The contract is a scoped evmironment for this execution context
+    // EVM. The contract is a scoped environment for this execution context
     // only.
     contract := NewContract(caller, AccountRef(contractAddr), value, gas)
     contract.SetCallCode(&contractAddr, crypto.Keccak256Hash(code), code)
@@ -332,7 +332,7 @@ func (evm *EVM) Create(caller ContractRef, code []byte, gas uint64, value *big.I
 }
 ```
 
-Call方法, 无论我们转账或者是执行合约代码都会调用到这里， 同时合约里面的call指令也会执行到这里。
+Call方法, 无论我们转账或者是执行合约代码都会调用到这里， 同时`合约里面的call指令也会执行到这里`。
 
 ``` go
 // Call executes the contract associated with the addr with the given input as
@@ -406,7 +406,7 @@ func (evm *EVM) Call(caller ContractRef, addr common.Address, input []byte, gas 
 }
 ```
 
-剩下的三个函数 CallCode, DelegateCall, 和 StaticCall，这三个函数不能由外部调用，只能由Opcode触发。
+剩下的三个函数 CallCode, DelegateCall, 和 StaticCall，这三个函数`不能由外部调用，只能由Opcode触发`。
 
 CallCode
 
